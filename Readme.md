@@ -6,12 +6,12 @@
 
 
 ### Installation
-* Put entire code base into a directory on you web server named 'csv2xlsx'
+* Put entire code base into a directory on your web server named 'csv2xlsx'
 * All required components are commited to the repo for ease of installation, no need to run composer.
 
 ### Usage
 * Currently setup to call from a url
-* Send in query paramaters to see example for totaling a column
+* Send in query parameters to see example for totaling a column
 * The group_columns parameters let you choose any columns to group by, pass in zero based indexes to identify columns
 * The total_column is a single parameter to total (currently only supports totaling one column)
 
