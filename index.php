@@ -32,35 +32,35 @@ if (file_exists('output/BOM_from_CSV.xlsx')) {
 
 
 echo '<br>Example 2: Aggregating of quantity column (or any column)<br>';
-ini_set('auto_detect_line_endings', true);
+ini_set('auto_detect_line_endings', true); // helps to avoid problems with different OS line endings
 $file = fopen($inputFileName, 'r');
 $headerRow['header'] = fgetcsv($file); // grab the first row as the header
 
 $rows = array();
-    if (isset($_GET['group_columns'][0]) and isset($_GET['total_column'])) {
-        // there is a request to group the columns
-        $totalColumn    = $_GET['total_column'];
-        $groupColumns   = $_GET['group_columns'];
-        while ( ($row = fgetcsv($file) ) !== FALSE ) {
-            $aggregator = '';
-            foreach ($groupColumns as $groupColumn) {
-                $aggregator .= $row[$groupColumn] . '_';
-            }
-            if (isset($rows[$aggregator])) {
-                $rows[$aggregator][$totalColumn] += $row[$totalColumn]; //add values from grouped rows
-            } else {
-                $rows[$aggregator] = $row;
-                $rows[$aggregator][$totalColumn] = $row[$totalColumn];
-            }
+if (isset($_GET['group_columns'][0]) and isset($_GET['total_column'])) {
+    // we have valid arguments for grouping and totalling.
+    $totalColumn    = $_GET['total_column'];
+    $groupColumns   = $_GET['group_columns'];
+    while ( ($row = fgetcsv($file) ) !== FALSE ) {
+        $aggregator = '';
+        foreach ($groupColumns as $groupColumn) {
+            $aggregator .= $row[$groupColumn] . '_';
         }
-
-        $rows = array_merge($headerRow, $rows); // add out header row back in
-    } else {
-        echo 'Send in a query parameter to generate an xlsx with totals for columns<br>';
-        echo 'Provide group_columns parameters to identify which columns make a row a duplicate (provide indexes of column)<br>';
-        echo 'Provide the index of the column to total as total_column<br>';
-        echo 'Example query: http://localhost/csv2xl/?group_columns[0]=2&group_columns[1]=3&total_column=0<br>';
+        if (isset($rows[$aggregator])) {
+            $rows[$aggregator][$totalColumn] += $row[$totalColumn]; //add values from grouped rows
+        } else {
+            $rows[$aggregator] = $row;
+            $rows[$aggregator][$totalColumn] = $row[$totalColumn];
+        }
     }
+
+    $rows = array_merge($headerRow, $rows); // add out header row back in
+} else {
+    echo 'Send in a query parameter to generate an xlsx with totals for a column<br>';
+    echo 'Provide group_columns parameters to identify which columns make a row a duplicate (provide zero based indexes of the columns)<br>';
+    echo 'Provide the index of the column to total as total_column<br>';
+    echo 'Example query: http://localhost/csv2excel/index.php?group_columns[0]=2&group_columns[1]=3&total_column=0<br>';
+}
 
 
     if (isset($rows['header'])) {
